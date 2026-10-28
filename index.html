@@ -92,7 +92,9 @@ svg { flex: none; }
   background: var(--tiger); color: var(--tiger-ink);
   transition: transform .18s var(--ease), filter .18s var(--ease), box-shadow .18s var(--ease);
 }
-.btn:hover { filter: brightness(1.06); transform: translateY(-1px); box-shadow: 0 6px 18px rgba(244,162,89,.28); }
+@media (hover: hover) and (pointer: fine) {
+  .btn:hover { filter: brightness(1.06); transform: translateY(-1px); box-shadow: 0 6px 18px rgba(244,162,89,.28); }
+}
 .btn:active { transform: translateY(0) scale(.98); }
 .btn svg { width: 17px; height: 17px; }
 .btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); box-shadow: none; }
@@ -116,11 +118,13 @@ h1 { margin: 12px 0 8px; font: 900 clamp(32px, 4.4vw, 42px)/1.05 var(--display);
 .stat {
   display: flex; align-items: center; gap: 22px;
   padding: 42px 26px; border-radius: var(--r);
-  background: var(--glass); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  background: var(--glass);
   border: 1px solid var(--line); text-align: left;
-  transition: transform .22s var(--ease), border-color .22s var(--ease);
+  transition: border-color .22s var(--ease);
 }
-.stat:hover { transform: translateY(-3px); border-color: rgba(160,215,225,.28); }
+@media (hover: hover) and (pointer: fine) {
+  .stat:hover { border-color: rgba(160,215,225,.28); }
+}
 .stat .tile { width: 56px; height: 56px; border-radius: 14px; display: grid; place-items: center; }
 .stat .tile svg { width: 24px; height: 24px; }
 .stat.hw .tile { background: rgba(95,168,255,.16); color: var(--hw); }
@@ -133,7 +137,7 @@ h1 { margin: 12px 0 8px; font: 900 clamp(32px, 4.4vw, 42px)/1.05 var(--display);
 .cal {
   display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
   padding: 16px 22px; border-radius: var(--r);
-  background: var(--glass); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  background: var(--glass);
   border: 1px solid var(--line);
 }
 .cal > svg { width: 22px; height: 22px; color: var(--ink-soft); }
@@ -156,7 +160,7 @@ h1 { margin: 12px 0 8px; font: 900 clamp(32px, 4.4vw, 42px)/1.05 var(--display);
   flex: 0 1 212px; min-width: 0;
   display: flex; align-items: center; gap: 8px;
   background: var(--glass); border: 1px solid var(--line); border-radius: 10px; padding: 0 12px;
-  transition: border-color .2s var(--ease), flex-basis .3s var(--ease);
+  transition: border-color .2s var(--ease);
 }
 .search:focus-within { border-color: var(--tiger); flex-basis: 280px; }
 .search svg { width: 16px; height: 16px; color: var(--ink-faint); }
@@ -171,7 +175,7 @@ h1 { margin: 12px 0 8px; font: 900 clamp(32px, 4.4vw, 42px)/1.05 var(--display);
 .groups { display: grid; gap: 26px; }
 
 .list {
-  background: var(--glass); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  background: var(--glass);
   border: 1px solid var(--line); border-radius: var(--r); overflow: hidden;
 }
 .item {
@@ -190,12 +194,13 @@ h1 { margin: 12px 0 8px; font: 900 clamp(32px, 4.4vw, 42px)/1.05 var(--display);
   width: 20px; height: 20px; border-radius: 6px; padding: 0;
   border: 1.5px solid rgba(180,208,214,.4); background: rgba(0,0,0,.15);
   display: grid; place-items: center;
-  transition: background .2s var(--ease), border-color .2s var(--ease), transform .15s var(--ease);
+  transition: background .16s var(--ease), border-color .16s var(--ease), transform .12s var(--ease);
 }
 .check:hover { border-color: var(--tiger); }
-.check svg { width: 13px; height: 13px; color: #0b241a; transform: scale(0); transition: transform .25s var(--ease); }
+.check:active { transform: scale(.9); }
+.check svg { width: 13px; height: 13px; color: #0b241a; transform: scale(.5); opacity: 0; transition: transform .16s var(--ease), opacity .12s var(--ease); }
 .item.done .check { background: var(--asg); border-color: var(--asg); animation: pop .3s var(--ease); }
-.item.done .check svg { transform: scale(1); }
+.item.done .check svg { transform: scale(1); opacity: 1; }
 @keyframes pop { 50% { transform: scale(1.18); } }
 .item.done .title { color: var(--ink-faint); text-decoration: line-through; text-decoration-color: rgba(180,208,214,.5); }
 
@@ -234,7 +239,12 @@ h1 { margin: 12px 0 8px; font: 900 clamp(32px, 4.4vw, 42px)/1.05 var(--display);
   transition: color .18s var(--ease), border-color .18s var(--ease), background .18s var(--ease);
   -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
 }
-.push .push-main { border-radius: 9px 0 0 9px; }
+.push .push-main { border-radius: 9px 0 0 9px; position: relative; overflow: hidden; }
+.push-main::after {
+  content: ""; position: absolute; inset: 0; background: currentColor; opacity: .14;
+  clip-path: inset(0 100% 0 0); transition: clip-path .16s ease-out; pointer-events: none;
+}
+.push-main.holding::after { clip-path: inset(0 0 0 0); transition: clip-path .5s linear; }
 .push .push-more { border-radius: 0 9px 9px 0; border-left: 0; padding: 6px 7px; }
 .push button:hover { color: var(--tiger); background: rgba(244,162,89,.08); }
 .push button:disabled { opacity: .5; cursor: default; }
@@ -242,8 +252,10 @@ h1 { margin: 12px 0 8px; font: 900 clamp(32px, 4.4vw, 42px)/1.05 var(--display);
 .menu {
   position: fixed; z-index: 20; min-width: 236px; padding: 6px; display: grid; gap: 2px;
   background: var(--glass-strong); border: 1px solid var(--line); border-radius: 12px;
-  box-shadow: 0 14px 34px rgba(0,0,0,.4); animation: dlg .18s var(--ease);
+  box-shadow: 0 14px 34px rgba(0,0,0,.4);
+  transform-origin: var(--origin, top right); animation: menuIn .15s cubic-bezier(0.23, 1, 0.32, 1);
 }
+@keyframes menuIn { from { opacity: 0; transform: scale(.96); } }
 .menu .mh { padding: 8px 10px 4px; font-size: 11.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-faint); }
 .menu button { display: flex; justify-content: space-between; gap: 16px; border: 0; background: transparent; text-align: left; padding: 9px 10px; border-radius: 8px; font-size: 14px; font-weight: 600; }
 .menu button span + span { color: var(--ink-soft); font-weight: 500; font-variant-numeric: tabular-nums; }
@@ -254,7 +266,7 @@ h1 { margin: 12px 0 8px; font: 900 clamp(32px, 4.4vw, 42px)/1.05 var(--display);
 .next-card {
   display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 18px; align-items: center;
   padding: 20px 22px; border-radius: var(--r); border: 1px solid var(--line);
-  background: var(--glass); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  background: var(--glass);
   transition: opacity .3s var(--ease); animation: rise .45s var(--ease) backwards;
 }
 .next-card.is-overdue { box-shadow: inset 3px 0 0 var(--overdue); }
@@ -317,7 +329,7 @@ dialog::backdrop { background: rgba(4, 14, 18, .55); backdrop-filter: blur(3px);
 .field textarea { resize: vertical; min-height: 80px; }
 .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .seg { display: flex; gap: 6px; flex-wrap: wrap; }
-.seg button { border: 1px solid var(--line); background: transparent; border-radius: 9px; padding: 7px 12px; font-size: 14px; font-weight: 600; color: var(--ink-soft); transition: all .18s var(--ease); }
+.seg button { border: 1px solid var(--line); background: transparent; border-radius: 9px; padding: 7px 12px; font-size: 14px; font-weight: 600; color: var(--ink-soft); transition: background .18s var(--ease), border-color .18s var(--ease), color .18s var(--ease); }
 .seg button:hover { color: var(--ink); }
 .seg button[aria-pressed="true"] { border-color: var(--tiger); color: var(--tiger); background: rgba(244,162,89,.12); }
 .actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
@@ -372,7 +384,10 @@ dialog::backdrop { background: rgba(4, 14, 18, .55); backdrop-filter: blur(3px);
   .stat span { font-size: 13px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation: none !important; transition: none !important; }
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+  .item, .plan-row, .empty, .stat, .btn, .check, .menu, .toast { transform: none !important; }
+  .btn:hover, .stat:hover { transform: none !important; }
+  .cal[data-state="busy"] .cal-dot { animation: none; }
 }
 </style>
 
@@ -699,16 +714,32 @@ dialog::backdrop { background: rgba(4, 14, 18, .55); backdrop-filter: blur(3px);
   }
 
   // ---- toast ----
-  let toastTimer = null, undoFn = null;
+  const reduceMotion = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const EASE_OUT = "cubic-bezier(0.23, 1, 0.32, 1)";
+  let toastTimer = null, undoFn = null, toastOut = null;
   function toast(msg, undo) {
     const tEl = $("#toast");
+    if (toastOut) { toastOut.cancel(); toastOut = null; }
     tEl.hidden = true; void tEl.offsetWidth;
     $("#toastMsg").textContent = msg; undoFn = undo || null;
     $("#toastUndo").hidden = !undo; tEl.hidden = false;
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => { tEl.hidden = true; undoFn = null; }, 5000);
+    toastTimer = setTimeout(hideToast, 5000);
   }
-  $("#toastUndo").addEventListener("click", () => { const f = undoFn; $("#toast").hidden = true; undoFn = null; f && f(); });
+  // Leaves along the path it came in on; a new toast cancels an exit in progress.
+  async function hideToast() {
+    const tEl = $("#toast");
+    clearTimeout(toastTimer);
+    if (tEl.hidden) return;
+    const frames = reduceMotion()
+      ? [{ opacity: 1 }, { opacity: 0 }]
+      : [{ opacity: 1, transform: "translate(-50%, 0)" }, { opacity: 0, transform: "translate(-50%, 8px)" }];
+    const a = toastOut = tEl.animate(frames, { duration: 200, easing: EASE_OUT, fill: "forwards" });
+    try { await a.finished; } catch (_) { return; }
+    if (toastOut !== a) return;
+    tEl.hidden = true; undoFn = null;
+  }
+  $("#toastUndo").addEventListener("click", () => { const f = undoFn; undoFn = null; hideToast(); f && f(); });
 
   // ---- google calendar ----
   const GCAL = "Google Calendar";
@@ -984,8 +1015,11 @@ dialog::backdrop { background: rgba(4, 14, 18, .55); backdrop-filter: blur(3px);
     main.disabled = more.disabled = !canWrite;
     // Long press opens the same menu as the arrow.
     let timer = null, long = false;
-    main.addEventListener("pointerdown", () => { long = false; clearTimeout(timer); timer = setTimeout(() => { long = true; openMenu(more, it); }, 500); });
-    ["pointerup", "pointerleave", "pointercancel"].forEach((ev) => main.addEventListener(ev, () => clearTimeout(timer)));
+    main.addEventListener("pointerdown", () => {
+      long = false; clearTimeout(timer); main.classList.add("holding");
+      timer = setTimeout(() => { long = true; main.classList.remove("holding"); openMenu(more, it); }, 500);
+    });
+    ["pointerup", "pointerleave", "pointercancel"].forEach((ev) => main.addEventListener(ev, () => { clearTimeout(timer); main.classList.remove("holding"); }));
     main.addEventListener("contextmenu", (e) => e.preventDefault());
     main.addEventListener("click", () => { if (long) { long = false; return; } doPush(it, pushOptions(it)[0]); });
     more.addEventListener("click", () => (menuFor === it.id ? closeMenu() : openMenu(more, it)));
@@ -1009,8 +1043,10 @@ dialog::backdrop { background: rgba(4, 14, 18, .55); backdrop-filter: blur(3px);
     menuEl = m; menuFor = it.id;
     const r = anchor.getBoundingClientRect(), w = m.offsetWidth, h = m.offsetHeight;
     const left = Math.max(8, Math.min(r.right - w, innerWidth - w - 8));
-    const top = r.bottom + 6 + h > innerHeight - 8 ? Math.max(8, r.top - h - 6) : r.bottom + 6;
+    const placedAbove = r.bottom + 6 + h > innerHeight - 8;
+    const top = placedAbove ? Math.max(8, r.top - h - 6) : r.bottom + 6;
     m.style.left = left + "px"; m.style.top = top + "px";
+    m.style.setProperty("--origin", placedAbove ? "bottom right" : "top right");
     m.querySelector("button").focus();
   }
   document.addEventListener("pointerdown", (e) => { if (menuEl && !menuEl.contains(e.target) && !e.target.closest(".push")) closeMenu(); });
@@ -1291,7 +1327,19 @@ dialog::backdrop { background: rgba(4, 14, 18, .55); backdrop-filter: blur(3px);
     if (!col || !canWrite) return;
     const now = new Date().toISOString(), next = !it.completed;
     if (rowEl) rowEl.classList.toggle("done", next);
-    if (next && rowEl && view !== "done") { rowEl.style.opacity = ".45"; await new Promise((r) => setTimeout(r, 380)); }
+    // The check lands first, then the row folds away so the rows below slide up instead of jumping.
+    if (next && rowEl && view !== "done") {
+      if (reduceMotion()) {
+        await rowEl.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 200, fill: "forwards" }).finished;
+      } else {
+        const h = rowEl.offsetHeight;
+        rowEl.style.overflow = "hidden";
+        await rowEl.animate(
+          [{ height: h + "px", opacity: 1 }, { height: h + "px", opacity: 1, offset: 0.42 }, { height: "0px", opacity: 0, paddingTop: 0, paddingBottom: 0 }],
+          { duration: 380, easing: EASE_OUT, fill: "forwards" }
+        ).finished;
+      }
+    }
     try { await write(() => col.doc(it.id).update({ completed: next, completedAt: next ? now : null, updatedAt: now }), "Couldn’t update that item."); }
     catch (_) { render(); return; }
     calSyncItem({ ...it, completed: next });

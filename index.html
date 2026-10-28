@@ -582,12 +582,12 @@ dialog::backdrop { background: color-mix(in srgb, #2e2b25 45%, transparent); bac
 @media (prefers-reduced-transparency: reduce) { .top { background: var(--wall); } }
 
 /* ---------- count bubbles: area ∝ open items ---------- */
-.inner { grid-template-columns: minmax(0, 1fr) minmax(0, 380px); column-gap: 40px; }
+.inner { grid-template-columns: minmax(0, 1fr) minmax(0, 420px); column-gap: 24px; }
 .inner > * { grid-column: 1 / -1; }
 .inner > section:first-child { grid-column: 1; grid-row: 1; align-self: center; }
 .inner > .stats { grid-column: 2; grid-row: 1; }
-.stats { display: block; position: relative; height: 280px; }
-.stats .stat { position: absolute; left: 0; top: 0; width: 200px; height: 200px; margin: 0; padding: 0; border: 0; border-radius: 50%;
+.stats { display: block; position: relative; height: 364px; }
+.stats .stat { position: absolute; left: 0; top: 0; width: 260px; height: 260px; margin: 0; padding: 0; border: 0; border-radius: 50%;
   background: none; box-shadow: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
   text-align: center; pointer-events: none; opacity: 0; will-change: transform; }
 .stats .stat:focus-visible { outline: none; }
@@ -603,15 +603,15 @@ dialog::backdrop { background: color-mix(in srgb, #2e2b25 45%, transparent); bac
 .stats .stat .blob:active { filter: brightness(.92); }
 .stats .stat .tile { width: auto; height: auto; background: none !important; color: var(--cream) !important; }
 .stats .stat .tile svg { width: 20px; height: 20px; }
-.stats .stat b { font-size: 46px; line-height: 1; color: var(--cream) !important; }
+.stats .stat b { font-size: 56px; line-height: 1; color: var(--cream) !important; }
 .stats .stat span span { margin-top: 2px; font-size: 13px; font-weight: 700; color: var(--cream) !important; }
-.stats .stat.sm b { font-size: 30px; }
+.stats .stat.sm b { font-size: 36px; }
 .stats .stat.sm .tile { display: none; }
 .stats .stat.zero b, .stats .stat.zero span span, .stats .stat.zero .tile { color: var(--ink-soft) !important; }
 @media (max-width: 1180px) {
   .inner { grid-template-columns: minmax(0, 1fr); }
   .inner > .stats { grid-column: 1; grid-row: 2; }
-  .stats { height: 250px; max-width: 520px; }
+  .stats { height: 320px; max-width: 640px; }
 }
 
 /* ---------- logo: three bubbles, echoing the count cluster ---------- */
@@ -1222,7 +1222,7 @@ html.fx-on body { background: transparent; }
     const box = $(".stats"); if (!box) return;
     const els = [...box.querySelectorAll(".stat")];
     els.forEach((s) => { if (!s.querySelector(".blob")) s.prepend(el("span", "blob")); });
-    const W = box.clientWidth, H = box.clientHeight, D = 200, MIN = 92, max = Math.max(...counts);
+    const W = box.clientWidth, H = box.clientHeight, D = 260, MIN = 120, max = Math.max(...counts);
     const allZero = max === 0;
     const d = counts.map((n) => allZero ? MIN : n ? Math.max(MIN, D * Math.sqrt(n / max)) : 0);
     // pack visible bubbles: first at origin, each next tangent to the previous at alternating angles
@@ -1245,7 +1245,7 @@ html.fx-on body { background: transparent; }
     const rm = reduceMotion(), first = !bubblesReady;
     els.forEach((s, i) => {
       s.classList.toggle("zero", allZero);
-      s.classList.toggle("sm", d[i] * f < 130);
+      s.classList.toggle("sm", d[i] * f < 170);
       s.style.zIndex = String(i + 1);
       s.style.transition = rm ? "opacity .2s ease" : "transform " + SPRING.duration + "ms " + SPRING.easing + ", opacity .2s ease";
       s.style.transitionDelay = first && !rm ? i * 60 + "ms" : "0ms";

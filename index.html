@@ -623,12 +623,6 @@ dialog::backdrop { background: color-mix(in srgb, #2e2b25 45%, transparent); bac
 .btn, .check, .slot, .push button, .seg button, .edit, .toast button { will-change: auto; }
 
 /* ---------- delight layer (built in JS; mouse + full motion only) ---------- */
-.cursor-dot, .cursor-ring { position: fixed; left: 0; top: 0; z-index: 61; pointer-events: none; border-radius: 50%; transition: opacity .2s ease; }
-.cursor-dot { width: 6px; height: 6px; background: var(--tiger); }
-.cursor-ring { width: 34px; height: 34px; border: 1.5px solid color-mix(in srgb, var(--tiger) 70%, transparent);
-  transition: opacity .2s ease, background-color .2s ease, border-color .2s ease; }
-.cursor-ring.on { background: color-mix(in srgb, var(--tiger) 14%, transparent); border-color: var(--tiger); }
-.cursor-hidden .cursor-dot, .cursor-hidden .cursor-ring { opacity: 0; }
 html.fx-on body { background: transparent; }
 .ambient { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
 .amb { position: absolute; border-radius: 50%; }
@@ -1074,21 +1068,16 @@ html.fx-on body { background: transparent; }
   function initFx() {
     if (reduceMotion() || !fine.matches) return;
     document.documentElement.classList.add("fx-on");
-    const dot = el("div", "cursor-dot"), ring = el("div", "cursor-ring"), amb = el("div", "ambient");
+    const amb = el("div", "ambient");
     const blobs = ["a1", "a2", "a3"].map((c) => el("span", "amb " + c));
     amb.append(...blobs);
-    [dot, ring, amb].forEach((c) => c.setAttribute("aria-hidden", "true"));
-    document.body.prepend(amb); document.body.append(dot, ring);
+    amb.setAttribute("aria-hidden", "true");
+    document.body.prepend(amb);
     const DEPTH = [0.05, -0.04, 0.08];
-    let x = innerWidth / 2, y = innerHeight / 2, target = null, raf = 0, down = false, magnet = null, tilted = null;
+    let x = innerWidth / 2, y = innerHeight / 2, target = null, raf = 0, magnet = null, tilted = null;
     const resetTilt = (c) => M.animate(c, { transform: "perspective(900px) rotateX(0deg) rotateY(0deg) translateY(0px)" }, { type: "spring", visualDuration: 0.45, bounce: 0.35 });
     function frame() {
       raf = 0;
-      dot.style.transform = "translate(" + x + "px," + y + "px) translate(-50%,-50%)";
-      const hot = target && target.closest(PRESSABLE + ", a, input, textarea, select, .linkish, .stat .blob");
-      ring.classList.toggle("on", !!hot);
-      M.animate(ring, { transform: "translate(" + x + "px," + y + "px) translate(-50%,-50%) scale(" + ((hot ? 1.75 : 1) * (down ? 0.7 : 1)) + ")" },
-        { type: "spring", visualDuration: 0.32, bounce: 0.3 });
       blobs.forEach((b, i) => M.animate(b, { transform: "translate(" + (x - innerWidth / 2) * DEPTH[i] + "px," + (y - innerHeight / 2) * DEPTH[i] + "px)" },
         { type: "spring", visualDuration: 1.1, bounce: 0.1 }));
       // Magnetic: the control under the cursor leans toward it.
@@ -1117,11 +1106,9 @@ html.fx-on body { background: transparent; }
     const queue = () => { if (!raf) raf = requestAnimationFrame(frame); };
     document.addEventListener("pointermove", (e) => {
       if (e.pointerType !== "mouse") return;
-      x = e.clientX; y = e.clientY; target = e.target; document.documentElement.classList.remove("cursor-hidden"); queue();
+      x = e.clientX; y = e.clientY; target = e.target; queue();
     }, { passive: true });
-    document.addEventListener("pointerdown", (e) => { if (e.pointerType === "mouse") { down = true; queue(); } });
-    document.addEventListener("pointerup", () => { down = false; queue(); });
-    document.addEventListener("mouseout", (e) => { if (!e.relatedTarget) { document.documentElement.classList.add("cursor-hidden"); target = null; queue(); } });
+    document.addEventListener("mouseout", (e) => { if (!e.relatedTarget) { target = null; queue(); } });
     // Headline words and logo bubbles hop when the cursor brushes them.
     document.addEventListener("pointerover", (e) => {
       if (e.pointerType !== "mouse") return;

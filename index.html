@@ -563,6 +563,8 @@ dialog::backdrop { background: rgba(4, 14, 18, .55); backdrop-filter: blur(3px);
 
 <div class="toast" id="toast" hidden><span id="toastMsg"></span><button type="button" id="toastUndo" hidden>Undo</button></div>
 
+<script src="https://cdn.jsdelivr.net/npm/motion@14.1.0/dist/motion.js"></script>
+
 <script>
 (() => {
   const $ = (s) => document.querySelector(s);
@@ -576,7 +578,7 @@ dialog::backdrop { background: rgba(4, 14, 18, .55); backdrop-filter: blur(3px);
   const PEN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>';
   const TICK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
   let db = null, col = null, canWrite = true, loaded = false, animateNext = true;
-  let items = [], view = "next", query = "", editing = null;
+  let items = [], view = "next", query = "", editing = null, justCleared = false;
 
   // ---- dates (local) ----
   const pad = (n) => String(n).padStart(2, "0");
@@ -710,6 +712,14 @@ dialog::backdrop { background: rgba(4, 14, 18, .55); backdrop-filter: blur(3px);
       plan: ["Nothing to plan", "Add homework with an est. time to find time for it."],
     }[view];
     e.append(el("h3", "", msg[0]), el("p", "", msg[1]));
+    // Finishing the last open item earns one spring instead of the usual rise. Motion is optional: no CDN, no spring.
+    if (justCleared && (view === "next" || view === "upcoming")) {
+      justCleared = false;
+      if (window.Motion && !reduceMotion()) {
+        e.style.animation = "none";
+        queueMicrotask(() => Motion.animate(e, { opacity: [0, 1], scale: [0.96, 1] }, { type: "spring", bounce: 0.2, duration: 0.5 }));
+      }
+    }
     return e;
   }
 
@@ -1326,6 +1336,7 @@ dialog::backdrop { background: rgba(4, 14, 18, .55); backdrop-filter: blur(3px);
   async function toggle(it, rowEl) {
     if (!col || !canWrite) return;
     const now = new Date().toISOString(), next = !it.completed;
+    justCleared = next && !items.some((x) => !x.completed && x.id !== it.id);
     if (rowEl) rowEl.classList.toggle("done", next);
     // The check lands first, then the row folds away so the rows below slide up instead of jumping.
     if (next && rowEl && view !== "done") {

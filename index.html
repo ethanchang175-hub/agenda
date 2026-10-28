@@ -426,8 +426,8 @@ h1, h2, h3, .logo b, .stat b, .group-h, .empty h3, .rank, .dlg h2 { font-family:
 .ic-hw { color: #aebf92; } .ic-proj { color: #f6a06b; } .ic-test { color: #eee7db; } .ic-done { color: #c0b6a5; } .ic-next { color: #f6a06b; }
 
 /* light top bar */
-.top { background: color-mix(in srgb, var(--wall) 88%, transparent); border: 0; }
-.top .date { color: var(--ink-soft); font-size: 14px; }
+.top { background: transparent; border: 0; backdrop-filter: none; -webkit-backdrop-filter: none; }
+.top .date { font-family: var(--display); font-weight: 400; font-size: 20px; color: var(--ink); }
 
 /* buttons: pills */
 .btn { border-radius: 999px; padding: 11px 22px; font-family: var(--display); font-weight: 400; font-size: 15px; box-shadow: var(--shadow-md); }
@@ -1241,7 +1241,8 @@ html.fx-on body { background: transparent; }
     let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
     vis.forEach((i) => { const r = d[i] / 2; x0 = Math.min(x0, pos[i][0] - r); x1 = Math.max(x1, pos[i][0] + r); y0 = Math.min(y0, pos[i][1] - r); y1 = Math.max(y1, pos[i][1] + r); });
     const f = vis.length ? Math.min(1, (W - 16) / (x1 - x0), (H - 16) / (y1 - y0)) : 1;
-    const ox = (innerWidth <= 1180 ? 8 : (W - (x1 - x0) * f) / 2) - x0 * f, oy = (H - (y1 - y0) * f) / 2 - y0 * f;
+    const ox = W - 8 - (x1 - x0) * f - x0 * f, // cluster sits against the right edge
+      oy = (H - (y1 - y0) * f) / 2 - y0 * f;
     const rm = reduceMotion(), first = !bubblesReady;
     els.forEach((s, i) => {
       s.classList.toggle("zero", allZero);

@@ -687,6 +687,54 @@ html.fx-on body { background: transparent; }
 .amb.a2 { width: 52vmax; height: 52vmax; right: -16vmax; bottom: -22vmax; background: radial-gradient(circle, color-mix(in srgb, #aebf92 36%, transparent), transparent 65%); }
 .amb.a3 { width: 34vmax; height: 34vmax; left: 42%; top: 28%; background: radial-gradient(circle, color-mix(in srgb, #ffc6a5 32%, transparent), transparent 65%); }
 .item, .next-card, .plan-row { position: relative; }
+/* ---------- Motion polish: page entrance, ambient drift, exits, loading ---------- */
+/* Opacity + the individual `translate` property only, so these compose with the transforms JS already drives. */
+:root { --m-out: cubic-bezier(0.23, 1, 0.32, 1); --m-io: cubic-bezier(0.45, 0, 0.55, 1); }
+
+/* Page entrance, once per load: sidebar slides in, nav items and panels rise in a short stagger. */
+@keyframes enterUp { from { opacity: 0; translate: 0 10px; } }
+@keyframes enterSide { from { opacity: 0; translate: -14px 0; } }
+.side { animation: enterSide .6s var(--m-out) backwards; }
+.side .logo { animation: enterUp .55s var(--m-out) .06s backwards; }
+.side .nav-h { animation: enterUp .55s var(--m-out) .1s backwards; }
+.side .nav button, .nav-pill { animation: enterUp .5s var(--m-out) backwards; }
+.nav-pill, .side .nav button:nth-of-type(1) { animation-delay: .14s; }
+.side .nav button:nth-of-type(2) { animation-delay: .18s; }
+.side .nav button:nth-of-type(3) { animation-delay: .22s; }
+.side .nav button:nth-of-type(4) { animation-delay: .26s; }
+.side .nav button:nth-of-type(5) { animation-delay: .3s; }
+.side .nav button:nth-of-type(6) { animation-delay: .34s; }
+.side .nav button:nth-of-type(7) { animation-delay: .38s; }
+.top > * { animation: enterUp .5s var(--m-out) .08s backwards; }
+.main .cal { animation: enterUp .6s var(--m-out) .3s backwards; }
+.main .sec-head { animation: enterUp .6s var(--m-out) .38s backwards; }
+.main .foot { animation: enterUp .6s var(--m-out) .5s backwards; }
+
+/* Ambient glow: a very slow drift on top of the cursor parallax. */
+@keyframes ambDrift { 0%, 100% { translate: 0 0; } 33% { translate: 2.5vmax -1.5vmax; } 66% { translate: -2vmax 2vmax; } }
+.amb { animation: ambDrift 26s var(--m-io) infinite; }
+.amb.a2 { animation-duration: 32s; animation-delay: -9s; }
+.amb.a3 { animation-duration: 22s; animation-delay: -15s; }
+
+/* Dialog fields settle in quickly after the panel. */
+dialog[open] .dlg > * { animation: enterUp .28s var(--m-out) backwards; }
+dialog[open] .dlg > :nth-child(2) { animation-delay: .02s; }
+dialog[open] .dlg > :nth-child(3) { animation-delay: .04s; }
+dialog[open] .dlg > :nth-child(4) { animation-delay: .06s; }
+dialog[open] .dlg > :nth-child(5) { animation-delay: .08s; }
+dialog[open] .dlg > :nth-child(n+6) { animation-delay: .1s; }
+
+/* Push menu leaves with a quick fade toward its trigger. */
+@keyframes menuOut { to { opacity: 0; transform: scale(.97); } }
+.menu.leaving { animation: menuOut .12s ease-out forwards; pointer-events: none; }
+
+/* Loading text breathes softly while data arrives. */
+@keyframes breathe { to { opacity: .45; } }
+.empty.is-loading h3, .empty.is-loading p, .plan-bar .is-loading { animation: breathe 1.2s var(--m-io) infinite alternate; }
+
+@media (prefers-reduced-motion: reduce) {
+  .amb, .empty.is-loading h3, .empty.is-loading p, .plan-bar .is-loading { animation: none !important; }
+}
 </style>
 
 <aside class="side">
@@ -755,7 +803,7 @@ html.fx-on body { background: transparent; }
     </section>
 
     <div class="groups" id="groups" aria-live="polite">
-      <div class="list"><div class="empty"><h3>Loading your planner…</h3><p>Your homework, projects, and tests will show up here.</p></div></div>
+      <div class="list"><div class="empty is-loading"><h3>Loading your planner…</h3><p>Your homework, projects, and tests will show up here.</p></div></div>
     </div>
 
     <footer class="foot">
@@ -1057,16 +1105,27 @@ html.fx-on body { background: transparent; }
     if (empty) { empty.style.animation = "none"; M.animate(empty, { opacity: [0, 1], transform: ["translateY(" + 10 * dir + "px) scale(.98)", "translateY(0px) scale(1)"] }, SETTLE); }
   }
 
-  // First paint / new data: rows reveal with a capped 40ms stagger.
+  // Rows below the fold rise in as they scroll into view.
+  const scrollIO = "IntersectionObserver" in window ? new IntersectionObserver((entries) => {
+    const vis = entries.filter((e) => e.isIntersecting).map((e) => e.target);
+    vis.forEach((r) => scrollIO.unobserve(r));
+    if (vis.length && M) M.animate(vis, { opacity: [0, 1], transform: ["translateY(12px)", "translateY(0px)"] }, { ...SETTLE, delay: (i) => Math.min(i, 6) * 0.05 });
+  }, { rootMargin: "0px 0px -6% 0px" }) : null;
+
+  // First paint / new data: rows on screen reveal with a capped stagger; the rest wait for scroll.
   function revealList() {
     if (!M) return;
     const dir = navDir; navDir = 0;
     const rows = [...document.querySelectorAll("#groups [data-reveal]" + (dir ? ", #groups .group-h" : ""))];
     rows.forEach((r) => delete r.dataset.reveal);
+    if (scrollIO) scrollIO.disconnect();
     if (!rows.length) return;
     if (reduceMotion()) { M.animate(rows, { opacity: [0, 1] }, { duration: 0.2 }); return; }
-    M.animate(rows, { opacity: [0, 1], transform: ["translateY(" + (dir ? 12 * dir : 8) + "px)", "translateY(0px)"] },
+    const later = scrollIO ? rows.filter((r) => r.getBoundingClientRect().top > innerHeight) : [];
+    const now = rows.filter((r) => !later.includes(r));
+    if (now.length) M.animate(now, { opacity: [0, 1], transform: ["translateY(" + (dir ? 12 * dir : 8) + "px)", "translateY(0px)"] },
       { ...SETTLE, delay: (i) => Math.min(i, 6) * (dir ? 0.03 : 0.04) });
+    later.forEach((r) => { r.style.opacity = "0"; scrollIO.observe(r); });
   }
 
   // Hero headline: words rise in once on load; later changes cross-fade (they happen tens of times a day).
@@ -1812,7 +1871,15 @@ html.fx-on body { background: transparent; }
     return w;
   }
   let menuEl = null, menuFor = null;
-  function closeMenu() { if (menuEl) menuEl.remove(); menuEl = null; menuFor = null; }
+  function closeMenu() {
+    if (menuEl) {
+      const m = menuEl;
+      m.classList.add("leaving");
+      m.addEventListener("animationend", () => m.remove(), { once: true });
+      setTimeout(() => m.remove(), 200);
+    }
+    menuEl = null; menuFor = null;
+  }
   function openMenu(anchor, it) {
     closeMenu();
     const m = el("div", "menu"); m.setAttribute("role", "menu");
@@ -2029,7 +2096,7 @@ html.fx-on body { background: transparent; }
   }
   function renderPlan(root, list) {
     const bar = el("div", "plan-bar" + (busyErr ? " err" : ""));
-    bar.append(el("span", "", busyLoading ? "Reading your Google Calendar…"
+    bar.append(el("span", busyLoading ? "is-loading" : "", busyLoading ? "Reading your Google Calendar…"
       : busyErr || (busy ? "Checked " + busy.cals + " calendars. Homework time: school days 1:30–2:00 PM and 4–10 PM, weekends 10 AM–8 PM." : "")));
     if (!busyLoading) { const rb = el("button", "linkish", busy ? "Refresh" : "Try again"); rb.type = "button"; rb.addEventListener("click", () => loadBusy(true)); bar.append(rb); }
     root.append(bar);

@@ -1,5 +1,9 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>Agenda</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20100%20100%22%3E%3Ccircle%20cx%3D%2250%22%20cy%3D%2250%22%20r%3D%2250%22%20fill%3D%22%23c67139%22%2F%3E%3Ccircle%20cx%3D%2240%22%20cy%3D%2257%22%20r%3D%2222%22%20fill%3D%22%23aebf92%22%20stroke%3D%22%23c67139%22%20stroke-width%3D%225%22%2F%3E%3Ccircle%20cx%3D%2264%22%20cy%3D%2237%22%20r%3D%2215%22%20fill%3D%22%23f5ead8%22%20stroke%3D%22%23c67139%22%20stroke-width%3D%225%22%2F%3E%3Ccircle%20cx%3D%2268%22%20cy%3D%2265%22%20r%3D%2211%22%20fill%3D%22%232e2b25%22%20stroke%3D%22%23c67139%22%20stroke-width%3D%225%22%2F%3E%3C%2Fsvg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20100%20100%22%3E%3Ccircle%20cx%3D%2250%22%20cy%3D%2250%22%20r%3D%2250%22%20fill%3D%22%23c67139%22%2F%3E%3Ccircle%20cx%3D%2240%22%20cy%3D%2257%22%20r%3D%2222%22%20fill%3D%22%23aebf92%22%20stroke%3D%22%23c67139%22%20stroke-width%3D%225%22%2F%3E%3Ccircle%20cx%3D%2264%22%20cy%3D%2237%22%20r%3D%2215%22%20fill%3D%22%23f5ead8%22%20stroke%3D%22%23c67139%22%20stroke-width%3D%225%22%2F%3E%3Ccircle%20cx%3D%2268%22%20cy%3D%2265%22%20r%3D%2211%22%20fill%3D%22%232e2b25%22%20stroke%3D%22%23c67139%22%20stroke-width%3D%225%22%2F%3E%3C%2Fsvg%3E">
+<meta name="theme-color" content="#f5ead8">
+
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Figtree:wght@400;500;600;700&display=swap">
@@ -614,10 +618,63 @@ dialog::backdrop { background: color-mix(in srgb, #2e2b25 45%, transparent); bac
   .stats { height: 320px; max-width: 640px; }
 }
 
+/* bubble hover: Motion drives these vars on .stat; CSS individual transforms compose with the layout transform */
+.stats .stat .blob { scale: var(--hs, 1); }
+.stats .stat > :not(.blob) { translate: calc(var(--px, 0) * 1px) calc(var(--py, 0) * 1px); }
+.stats .stat .tile svg { rotate: calc(var(--ir, 0) * 1deg); scale: var(--is, 1); }
+.stats .stat .ring { position: absolute; inset: 0; border-radius: 50%; pointer-events: none; }
 /* ---------- logo: three bubbles, echoing the count cluster ---------- */
 .logo-mark { width: 48px; height: 48px; }
 .logo-mark .lm-b { transform-box: fill-box; transform-origin: center; }
 
+/* ---------- section header: tab badge + panel ---------- */
+.sec-head { position: relative; padding: 22px 24px; margin-inline: -24px; border-radius: 36px; background: color-mix(in srgb, #fffaf1 70%, transparent); box-shadow: 0 1px 0 rgba(32,30,29,.04), 0 10px 30px -18px rgba(70,50,30,.25); scroll-margin-top: 16px; }
+.sec-head > div:first-child { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 16px; align-items: center; }
+.sec-head > div:first-child > :not(.sec-badge) { grid-column: 2; }
+.sec-badge { grid-row: 1 / span 2; width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; background: var(--tiger); color: var(--cream); box-shadow: inset 0 -3px 0 rgba(0,0,0,.12); }
+.sec-badge svg { width: 26px; height: 26px; stroke-width: 2.6; color: var(--cream) !important; stroke: currentColor !important; opacity: 1 !important; }
+.sec-badge[data-v="homework"], .sec-badge[data-v="upcoming"] { background: var(--hw); }
+.sec-badge[data-v="project"] { background: var(--proj); }
+.sec-badge[data-v="test"], .sec-badge[data-v="done"] { background: var(--test); }
+.sec-badge[data-v="plan"], .sec-badge[data-v="calendar"] { background: var(--asg); }
+.sec-head h2 { display: flex; align-items: baseline; gap: 10px; }
+.sec-count { font: 700 14px/1 var(--body); padding: 6px 10px; border-radius: 999px; background: color-mix(in srgb, var(--tiger) 14%, transparent); color: #8a4a22; align-self: center; }
+@media (max-width: 860px) { .sec-head { margin-inline: -8px; padding: 18px 16px; border-radius: 30px; } .sec-badge { width: 46px; height: 46px; } .sec-badge svg { width: 22px; height: 22px; } }
+/* ---------- graphic motion: decor layer, squiggle, bursts ---------- */
+.deco { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+.deco > * { position: absolute; }
+.d-ring { width: 150px; height: 150px; top: 17%; right: 4%; border-radius: 50%; border: 16px solid color-mix(in srgb, var(--hw) 32%, transparent); }
+.d-blob { width: 110px; height: 110px; bottom: 9%; left: calc(var(--side-w) + 3%); background: color-mix(in srgb, var(--proj) 22%, transparent); border-radius: 58% 42% 55% 45% / 48% 60% 40% 52%; }
+.d-dots { width: 112px; height: 72px; bottom: 16%; right: 9%; background: radial-gradient(circle, color-mix(in srgb, var(--tiger) 40%, transparent) 3.5px, transparent 4px) 0 0 / 16px 16px; }
+.d-half { width: 84px; height: 42px; top: 52%; right: 2.5%; border-radius: 84px 84px 0 0; background: color-mix(in srgb, var(--hw) 26%, transparent); }
+.d-wave { width: 170px; height: 30px; top: 30%; left: calc(var(--side-w) + 44%); color: color-mix(in srgb, var(--tiger) 34%, transparent); }
+.d-wave path, .squig path { fill: none; stroke: currentColor; stroke-linecap: round; }
+.d-wave path { stroke-width: 6; }
+.squig { display: block; width: 190px; height: 16px; margin: -2px 0 10px; color: var(--tiger); overflow: visible; }
+.squig path { stroke-width: 5; }
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes floatA { 50% { translate: 0 -14px; rotate: 6deg; } }
+  @keyframes floatB { 50% { translate: 10px 8px; rotate: -8deg; } }
+  @keyframes morph { 33% { border-radius: 42% 58% 38% 62% / 60% 40% 60% 40%; } 66% { border-radius: 60% 40% 52% 48% / 40% 55% 45% 60%; } }
+  @keyframes bob { from { translate: 0 -5px; } to { translate: 0 5px; } }
+  .d-ring { animation: floatA 11s ease-in-out infinite; }
+  .d-blob { animation: floatB 13s ease-in-out infinite, morph 9s ease-in-out infinite; }
+  .d-dots { animation: floatB 15s ease-in-out infinite reverse; }
+  .d-half { animation: floatA 12s ease-in-out -4s infinite; }
+  .d-wave { animation: floatB 10s ease-in-out -3s infinite; }
+  .stats .stat { animation: bob 5.5s ease-in-out infinite alternate; }
+  .stats .stat.proj { animation-duration: 6.5s; animation-delay: -2s; }
+  .stats .stat.test { animation-duration: 7.5s; animation-delay: -4.5s; }
+}
+@media (max-width: 760px) { .d-dots, .d-wave, .d-half { display: none; } .d-blob { left: 4%; } .d-ring { width: 96px; height: 96px; border-width: 11px; } }
+/* ---------- Motion: nav pill, counts, dialogs ---------- */
+.nav { position: relative; }
+.nav button { position: relative; z-index: 1; }
+.nav-pill { position: absolute; left: 0; top: 0; z-index: 0; border-radius: 999px; background: var(--tiger); pointer-events: none; }
+.nav.has-pill button[aria-current="true"] { background: transparent; }
+.nav button .n, .stats .stat b { display: inline-block; }
+dialog[open]::backdrop { animation: bdIn .2s ease-out; }
+@keyframes bdIn { from { opacity: 0; } }
 /* ---------- Motion-driven ---------- */
 .reveal-w { display: inline-block; white-space: pre; }
 .btn, .check, .slot, .push button, .seg button, .edit, .toast button { will-change: auto; }
@@ -630,11 +687,6 @@ html.fx-on body { background: transparent; }
 .amb.a2 { width: 52vmax; height: 52vmax; right: -16vmax; bottom: -22vmax; background: radial-gradient(circle, color-mix(in srgb, #aebf92 36%, transparent), transparent 65%); }
 .amb.a3 { width: 34vmax; height: 34vmax; left: 42%; top: 28%; background: radial-gradient(circle, color-mix(in srgb, #ffc6a5 32%, transparent), transparent 65%); }
 .item, .next-card, .plan-row { position: relative; }
-.item::after, .next-card::after, .plan-row::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
-  opacity: 0; transition: opacity .25s ease; background: radial-gradient(240px circle at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,.65), transparent 65%); }
-@media (hover: hover) and (pointer: fine) {
-  .item:hover::after, .next-card:hover::after, .plan-row:hover::after { opacity: 1; }
-}
 </style>
 
 <aside class="side">
@@ -671,6 +723,7 @@ html.fx-on body { background: transparent; }
     <section>
       <div class="eyebrow">Your study space</div>
       <h1>Stay ahead of what’s due.</h1>
+      <svg class="squig" viewBox="0 0 190 16" aria-hidden="true"><path pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" d="M3 9 C 18 2, 33 2, 48 9 S 78 16, 93 9 S 123 2, 138 9 S 168 16, 187 8"/></svg>
       <p class="lede">Homework, projects, and tests in one easy view.</p>
     </section>
 
@@ -844,7 +897,9 @@ html.fx-on body { background: transparent; }
   function render() {
     const reveal = animateNext;
     renderCore();
+    if (M) syncBadge();
     if (reveal) revealList();
+    if (loaded) live = true;
   }
   function renderCore() {
     if (loaded) calIdle();
@@ -852,24 +907,25 @@ html.fx-on body { background: transparent; }
     const open = items.filter((i) => !i.completed);
     celebrate = loaded && prevOpen > 0 && open.length === 0 && (view === "next" || view === "upcoming");
     if (loaded) prevOpen = open.length;
-    $("#cHw").textContent = open.filter((i) => i.kind === "homework" || i.kind === "assignment").length;
-    $("#cProj").textContent = open.filter((i) => i.kind === "project").length;
-    $("#cTest").textContent = open.filter((i) => i.kind === "test").length;
+    setCount($("#cHw"), open.filter((i) => i.kind === "homework" || i.kind === "assignment").length);
+    setCount($("#cProj"), open.filter((i) => i.kind === "project").length);
+    setCount($("#cTest"), open.filter((i) => i.kind === "test").length);
     if (loaded) {
       const late = open.filter((i) => i.dueDate < t).length, today = open.filter((i) => i.dueDate === t).length, soon = open.filter((i) => i.dueDate > t && i.dueDate <= wk).length;
       const n = late + today, W = ["Nothing", "One thing", "Two things", "Three things", "Four things", "Five things", "Six things", "Seven things", "Eight things", "Nine things"];
       setHeadline(n === 0 ? (open.length ? "You’re clear for today." : "All caught up.") : (n < 10 ? W[n] : n + " things") + (n === 1 ? " needs" : " need") + " you today.");
       const parts = []; if (late) parts.push(late + " overdue"); if (today) parts.push(today + " due today");
-      $("main .lede").textContent = (parts.length ? parts.join(" and ") + ". " : "") + (soon ? soon + (n ? " more land" : " due") + " in the next 7 days." : n ? "" : "Nothing due this week.");
+      setText($("main .lede"), (parts.length ? parts.join(" and ") + ". " : "") + (soon ? soon + (n ? " more land" : " due") + " in the next 7 days." : n ? "" : "Nothing due this week."));
     }
     layoutBubbles([
       +$("#cHw").textContent, +$("#cProj").textContent, +$("#cTest").textContent,
     ]);
     document.querySelectorAll("[data-n]").forEach((n) => {
       const k = n.dataset.n;
-      n.textContent = k === "upcoming" ? open.length : open.filter((i) => i.kind === k || (k === "homework" && i.kind === "assignment")).length;
+      setCount(n, k === "upcoming" ? open.length : open.filter((i) => i.kind === k || (k === "homework" && i.kind === "assignment")).length);
     });
     document.querySelectorAll("#nav button").forEach((b) => b.setAttribute("aria-current", String(b.dataset.view === view)));
+    syncPill();
     $("#secTitle").textContent = VIEW_TITLE[view];
 
     let list = view === "done" ? items.filter((i) => i.completed)
@@ -984,28 +1040,33 @@ html.fx-on body { background: transparent; }
 
   // ---- Motion (motion.dev, vanilla API — this app has no React) ----
   let M = null;
-  const motionReady = import("https://cdn.jsdelivr.net/npm/motion@12.43.0/+esm").then((m) => { M = m; initPress(); initFx(); }).catch(() => {});
+  const motionReady = import("https://cdn.jsdelivr.net/npm/motion@12.43.0/+esm").then((m) => { M = m; initPress(); initFx(); syncPill(); initDialogs(); initBubbleHover(); initDeco(); syncBadge(); }).catch(() => {});
   const SNAP = { type: "spring", visualDuration: 0.18, bounce: 0 };      // press / hover: critically damped
   const SETTLE = { type: "spring", visualDuration: 0.35, bounce: 0 };    // entrances
   const EASE_OUT_ARR = [0.23, 1, 0.32, 1];
 
   // View switch: dozens of times a day → opacity + 4px settle, 160ms. Never a slide.
-  function pageTransition() {
-    const els = [$("#groups"), $(".sec-head")];
-    if (!M) { els.forEach((e) => e.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 120, easing: "ease-out" })); return; }
-    if (reduceMotion()) { M.animate(els, { opacity: [0, 1] }, { duration: 0.12 }); return; }
-    M.animate(els, { opacity: [0, 1], transform: ["translateY(4px)", "translateY(0px)"] }, { duration: 0.16, ease: EASE_OUT_ARR });
+  // Tab switch: the heading and rows arrive from the direction of travel (down the nav = from below).
+  // Short and interruptible; rows stagger 30ms, capped, so the list is readable within ~250ms.
+  let navDir = 0;
+  function pageTransition(dir) {
+    const head = [$("#secTitle"), $("#secSub")], empty = $("#groups .empty");
+    if (!M) { [$("#groups"), $(".sec-head")].forEach((e) => e.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 120, easing: "ease-out" })); return; }
+    if (reduceMotion()) { M.animate([...head, $("#groups")], { opacity: [0, 1] }, { duration: 0.15 }); return; }
+    M.animate(head, { opacity: [0, 1], transform: ["translateY(" + 10 * dir + "px)", "translateY(0px)"] }, { duration: 0.24, ease: EASE_OUT_ARR, delay: M.stagger(0.03) });
+    if (empty) { empty.style.animation = "none"; M.animate(empty, { opacity: [0, 1], transform: ["translateY(" + 10 * dir + "px) scale(.98)", "translateY(0px) scale(1)"] }, SETTLE); }
   }
 
   // First paint / new data: rows reveal with a capped 40ms stagger.
   function revealList() {
     if (!M) return;
-    const rows = [...document.querySelectorAll("#groups [data-reveal]")];
+    const dir = navDir; navDir = 0;
+    const rows = [...document.querySelectorAll("#groups [data-reveal]" + (dir ? ", #groups .group-h" : ""))];
     rows.forEach((r) => delete r.dataset.reveal);
     if (!rows.length) return;
     if (reduceMotion()) { M.animate(rows, { opacity: [0, 1] }, { duration: 0.2 }); return; }
-    M.animate(rows, { opacity: [0, 1], transform: ["translateY(8px)", "translateY(0px)"] },
-      { ...SETTLE, delay: (i) => Math.min(i, 6) * 0.04 });
+    M.animate(rows, { opacity: [0, 1], transform: ["translateY(" + (dir ? 12 * dir : 8) + "px)", "translateY(0px)"] },
+      { ...SETTLE, delay: (i) => Math.min(i, 6) * (dir ? 0.03 : 0.04) });
   }
 
   // Hero headline: words rise in once on load; later changes cross-fade (they happen tens of times a day).
@@ -1017,15 +1078,74 @@ html.fx-on body { background: transparent; }
     const first = !headlineShown; headlineShown = true;
     if (!M || reduceMotion() || !first) {
       h1.textContent = text;
-      if (!first && M) M.animate(h1, { opacity: [0.35, 1] }, { duration: 0.18, ease: EASE_OUT_ARR });
+      if (!first && M) { M.animate(h1, { opacity: [0.35, 1] }, { duration: 0.18, ease: EASE_OUT_ARR }); drawSquig(0, true); }
+      else squigPath().setAttribute("stroke-dashoffset", "0");
       return;
     }
     h1.replaceChildren(...text.split(/(\s+)/).filter(Boolean).map((w) => el("span", "reveal-w", w)));
     h1.setAttribute("aria-label", text);
     const words = [...h1.children];
     M.animate(words, { opacity: [0, 1], transform: ["translateY(0.35em)", "translateY(0em)"] }, { ...SETTLE, delay: M.stagger(0.05) });
+    drawSquig(0.12 + words.length * 0.05);
     const extra = [$("main .eyebrow"), $("main .lede")];
     M.animate(extra, { opacity: [0, 1], transform: ["translateY(6px)", "translateY(0px)"] }, { ...SETTLE, delay: (i) => (i ? 0.08 + words.length * 0.05 : 0) });
+  }
+
+  // Sidebar: one pill slides between tabs (spatial: where you came from → where you are).
+  let pill = null, pillView = null;
+  function syncPill() {
+    if (!M) return;
+    const nav = $("#nav");
+    if (!pill) {
+      pill = el("span", "nav-pill"); pill.setAttribute("aria-hidden", "true");
+      nav.prepend(pill); nav.classList.add("has-pill");
+      new ResizeObserver(() => placePill(false)).observe(nav);
+    }
+    placePill(pillView !== null && pillView !== view && !reduceMotion());
+    pillView = view;
+  }
+  function placePill(anim) {
+    const nav = $("#nav"), b = nav.querySelector('button[aria-current="true"]');
+    if (!pill || !b) return;
+    const to = { transform: "translate(" + b.offsetLeft + "px, " + b.offsetTop + "px)", width: b.offsetWidth + "px", height: b.offsetHeight + "px" };
+    if (!anim) { M.animate(pill, to, { duration: 0 }); return; }
+    M.animate(pill, to, { type: "spring", visualDuration: 0.32, bounce: 0.15 });
+    const svg = b.querySelector("svg");
+    if (svg) M.animate(svg, { transform: ["scale(.7) rotate(-10deg)", "scale(1) rotate(0deg)"] }, { type: "spring", visualDuration: 0.4, bounce: 0.3 });
+    if (nav.scrollWidth > nav.clientWidth) { // mobile: horizontal tabs — keep the active one in view
+      const left = b.offsetLeft - (nav.clientWidth - b.offsetWidth) / 2;
+      nav.scrollTo({ left: Math.max(0, left), behavior: "smooth" });
+    }
+  }
+
+  // Counts tick when they change after load (state indication); copy cross-fades.
+  let live = false;
+  function setCount(elm, v) {
+    const s = String(v); if (elm.textContent === s) return;
+    elm.textContent = s;
+    if (live && M && !reduceMotion()) M.animate(elm, { transform: ["scale(1.3)", "scale(1)"] }, { type: "spring", visualDuration: 0.4, bounce: 0.3 });
+  }
+  function setText(elm, s) {
+    if (elm.textContent === s) return;
+    elm.textContent = s;
+    if (live && M) M.animate(elm, { opacity: [0.3, 1] }, { duration: 0.2, ease: EASE_OUT_ARR });
+  }
+
+  // Dialogs: they already rise in; now they leave the way they came, 150ms, backdrop fading with them.
+  function initDialogs() {
+    const native = HTMLDialogElement.prototype.close, nativeOpen = HTMLDialogElement.prototype.showModal;
+    document.querySelectorAll("dialog").forEach((d) => {
+      let out = null;
+      d.showModal = function () { if (out) { out.forEach((a) => a.cancel()); out = null; } if (!d.open) nativeOpen.call(d); };
+      d.close = function (rv) {
+        if (!d.open || out) return;
+        const rm = reduceMotion(), opt = { duration: 150, easing: EASE_OUT, fill: "forwards" };
+        const mine = out = [d.animate(rm ? [{ opacity: 1 }, { opacity: 0 }] : [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateY(6px) scale(.98)" }], opt)];
+        try { out.push(d.animate([{ opacity: 1 }, { opacity: 0 }], { ...opt, pseudoElement: "::backdrop" })); } catch (_) {}
+        mine[0].finished.then(() => { if (out !== mine) return; native.call(d, rv); mine.forEach((a) => a.cancel()); out = null; }).catch(() => {});
+      };
+      d.addEventListener("cancel", (e) => { e.preventDefault(); d.close(); });
+    });
   }
 
   // Buttons: press scales on pointer-down (instant feedback), hover lifts 1px on fine pointers only.
@@ -1092,13 +1212,12 @@ html.fx-on body { background: transparent; }
         s.my = Math.max(-cap, Math.min(cap, (y - r.top - r.height / 2) * pull));
         pstate.set(magnet, s); drive(magnet);
       }
-      // Cards tilt toward the cursor and a light follows it across the surface.
+      // Cards tilt toward the cursor.
       const c = target && target.closest(CARDS);
       if (tilted && tilted !== c) resetTilt(tilted);
       tilted = c;
       if (c) {
         const r = c.getBoundingClientRect(), px = (x - r.left) / r.width - 0.5, py = (y - r.top) / r.height - 0.5;
-        c.style.setProperty("--mx", (x - r.left) + "px"); c.style.setProperty("--my", (y - r.top) + "px");
         M.animate(c, { transform: "perspective(900px) rotateX(" + (-py * 6) + "deg) rotateY(" + (px * 8) + "deg) translateY(-3px)" },
           { type: "spring", visualDuration: 0.3, bounce: 0.25 });
       }
@@ -1119,6 +1238,116 @@ html.fx-on body { background: transparent; }
       M.animate(w, isWord ? { transform: ["translateY(0em) rotate(0deg)", "translateY(-0.22em) rotate(-3deg)", "translateY(0em) rotate(0deg)"] }
         : { transform: ["scale(1)", "scale(1.25)", "scale(1)"] }, { duration: 0.55, ease: EASE_OUT_ARR }).finished.then(() => delete w.dataset.hop);
     });
+  }
+
+  // ---- tab switch extras ----
+  // The section header gets the tab's icon in its colour; on switch the badge spins in from the
+  // direction of travel and the count chip pops. If the list is below the fold, a spring scroll
+  // brings it up so the switch is actually visible. Any wheel/touch cancels the scroll.
+  function syncBadge() {
+    const wrap = $(".sec-head > div"), b = document.querySelector('#nav button[aria-current="true"]');
+    if (!wrap || !b) return null;
+    let badge = wrap.querySelector(".sec-badge");
+    if (!badge) { badge = el("span", "sec-badge"); badge.setAttribute("aria-hidden", "true"); wrap.prepend(badge); }
+    if (badge.dataset.v !== view) {
+      badge.dataset.v = view;
+      const svg = b.querySelector("svg"); badge.replaceChildren(svg ? svg.cloneNode(true) : "");
+    }
+    const n = b.querySelector(".n"), h2 = $("#secTitle");
+    let chip = h2.querySelector(".sec-count");
+    const txt = n && n.textContent.trim() && n.textContent.trim() !== "0" ? n.textContent.trim() : "";
+    if (txt) { if (!chip) { chip = el("span", "sec-count"); h2.append(chip); } chip.textContent = txt; }
+    else if (chip) chip.remove();
+    return badge;
+  }
+  function tabFlourish(dir) {
+    const badge = syncBadge();
+    if (!M || !badge || reduceMotion()) return;
+    M.animate(badge, { transform: ["scale(.4) rotate(" + -40 * dir + "deg)", "scale(1) rotate(0deg)"], opacity: [0, 1] }, { type: "spring", visualDuration: 0.45, bounce: 0.35 });
+    const chip = $("#secTitle .sec-count");
+    if (chip) M.animate(chip, { transform: ["scale(.6)", "scale(1)"], opacity: [0, 1] }, { type: "spring", visualDuration: 0.4, bounce: 0.4, delay: 0.08 });
+    M.animate($(".sec-head"), { transform: ["scale(.985)", "scale(1)"] }, { type: "spring", visualDuration: 0.35, bounce: 0.2 });
+  }
+  let scrollAnim = null;
+  function bringSectionIn() {
+    const sh = $(".sec-head"); if (!sh) return;
+    const top = sh.getBoundingClientRect().top;
+    if (top > 0 && top < innerHeight * 0.45) return;
+    const from = scrollY, to = Math.max(0, scrollY + top - 16);
+    if (!M || reduceMotion()) { scrollTo(0, to); return; }
+    if (scrollAnim) scrollAnim.stop();
+    const stop = () => { if (scrollAnim) scrollAnim.stop(); scrollAnim = null; off(); };
+    const off = () => ["wheel", "touchstart", "keydown"].forEach((t) => removeEventListener(t, stop));
+    ["wheel", "touchstart", "keydown"].forEach((t) => addEventListener(t, stop, { passive: true, once: true }));
+    scrollAnim = M.animate(from, to, { type: "spring", visualDuration: 0.55, bounce: 0, onUpdate: (y) => scrollTo(0, y), onComplete: () => { scrollAnim = null; off(); } });
+  }
+
+  // ---- graphic motion ----
+  const squigPath = () => $(".squig path");
+  function drawSquig(delay, quick) {
+    const p = squigPath(); if (!p) return;
+    if (!M || reduceMotion()) { p.setAttribute("stroke-dashoffset", "0"); return; }
+    M.animate(p, { strokeDashoffset: [quick ? 0.6 : 1, 0] }, { duration: quick ? 0.35 : 0.7, delay, ease: [0.65, 0, 0.35, 1] });
+  }
+
+  // Soft background shapes: they pop in once, then drift on CSS loops (composite-only individual transforms).
+  function initDeco() {
+    if ($(".deco")) return;
+    const d = el("div", "deco"); d.setAttribute("aria-hidden", "true");
+    const wave = '<svg class="d-wave" viewBox="0 0 170 30"><path pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" d="M4 18 C 22 4, 40 4, 58 16 S 94 28, 112 15 S 148 3, 166 14"/></svg>';
+    d.innerHTML = '<span class="d-ring"></span><span class="d-blob"></span><span class="d-dots"></span><span class="d-half"></span>' + wave;
+    const amb = $(".ambient"); amb ? amb.after(d) : document.body.prepend(d);
+    const shapes = [...d.querySelectorAll("span")], wp = d.querySelector("path");
+    if (reduceMotion()) { wp.setAttribute("stroke-dashoffset", "0"); return; }
+    M.animate(shapes, { opacity: [0, 1], transform: ["scale(.4)", "scale(1)"] }, { type: "spring", visualDuration: 0.6, bounce: 0.35, delay: (i) => 0.25 + i * 0.09 });
+    M.animate(wp, { strokeDashoffset: [1, 0] }, { duration: 1, delay: 0.5, ease: [0.65, 0, 0.35, 1] });
+  }
+
+  // Count bubbles on hover: the bubble swells with a little bounce while its neighbours make room,
+  // a ring ripples out once, the icon wiggles and the label leans toward the cursor. Press squishes.
+  function initBubbleHover() {
+    if (reduceMotion() || !fine.matches) return;
+    const box = $(".stats"); if (!box) return;
+    const POP = { type: "spring", visualDuration: 0.4, bounce: 0.4 }, EASE = { type: "spring", visualDuration: 0.35, bounce: 0 };
+    let cur = null;
+    const stats = () => [...box.querySelectorAll(".stat")];
+    const BASE = { "--hs": 1, "--is": 1, "--px": 0, "--py": 0, "--ir": 0 };
+    stats().forEach((b) => Object.entries(BASE).forEach(([k, v]) => b.style.setProperty(k, v)));
+    // Always animate from the live value so springs retarget mid-flight instead of restarting from 0.
+    const tw = (b, vals, opt) => {
+      const kf = {};
+      for (const k in vals) { const now = parseFloat(b.style.getPropertyValue(k)); kf[k] = [isNaN(now) ? BASE[k] : now, vals[k]]; }
+      return M.animate(b, kf, opt);
+    };
+    function ripple(s) {
+      const blob = s.querySelector(".blob"), ring = el("span", "ring");
+      ring.style.boxShadow = "0 0 0 3px " + getComputedStyle(blob).backgroundColor;
+      blob.append(ring);
+      ring.animate([{ transform: "scale(1)", opacity: 0.7 }, { transform: "scale(1.22)", opacity: 0 }], { duration: 700, easing: EASE_OUT }).onfinish = () => ring.remove();
+      setTimeout(() => ring.remove(), 800);
+    }
+    function focus(s) {
+      if (s === cur) return; cur = s;
+      stats().forEach((b) => {
+        const on = b === s;
+        tw(b, { "--hs": on ? 1.08 : s ? 0.95 : 1 }, on ? POP : EASE);
+        if (!on) tw(b, { "--px": 0, "--py": 0, "--is": 1 }, EASE);
+      });
+      if (!s) return;
+      ripple(s);
+      M.animate(s, { "--ir": [0, -16, 12, -6, 0] }, { duration: 0.6, ease: "easeOut" });
+      tw(s, { "--is": 1.18 }, POP);
+    }
+    box.addEventListener("pointerover", (e) => { if (e.pointerType === "mouse") focus(e.target.closest(".stat")); });
+    box.addEventListener("pointerleave", () => focus(null));
+    box.addEventListener("pointermove", (e) => {
+      if (e.pointerType !== "mouse" || !cur) return;
+      const r = cur.querySelector(".blob").getBoundingClientRect();
+      const nx = (e.clientX - r.left) / r.width - 0.5, ny = (e.clientY - r.top) / r.height - 0.5;
+      tw(cur, { "--px": nx * 14, "--py": ny * 14 }, { type: "spring", visualDuration: 0.3, bounce: 0.2 });
+    }, { passive: true });
+    box.addEventListener("pointerdown", (e) => { const s = e.target.closest(".stat"); if (s) tw(s, { "--hs": 0.97 }, { type: "spring", visualDuration: 0.15, bounce: 0 }); });
+    addEventListener("pointerup", () => { if (cur) tw(cur, { "--hs": 1.08 }, POP); });
   }
 
   // ---- springs ----
@@ -2099,9 +2328,12 @@ html.fx-on body { background: transparent; }
   // ---- navigation ----
   const go = (v) => {
     if (v === view) return;
-    view = v; animateNext = false; closeMenu(); render();
-    // Nav runs dozens of times a day: no stagger, just a 120ms opacity settle.
-    pageTransition();
+    const order = [...document.querySelectorAll("#nav button")].map((b) => b.dataset.view);
+    const dir = Math.sign(order.indexOf(v) - order.indexOf(view)) || 1;
+    navDir = dir; view = v; animateNext = true; closeMenu(); render();
+    pageTransition(dir);
+    tabFlourish(dir);
+    bringSectionIn();
     if (v === "plan" && !busy) loadBusy(false);
   };
   $("#nav").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) go(b.dataset.view); });
